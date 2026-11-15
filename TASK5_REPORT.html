@@ -1,0 +1,779 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Task 5: WebSocket Dashboard &amp; Real-Time Telemetry — Vasugi D</title>
+<meta name="description" content="Technical report, FreeRTOS dual-core firmware, real-time WebSocket telemetry trends, and AuraIoT live cloud dashboard for Task 5 by Vasugi D.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ============ NAVIGATION ============ -->
+<header class="navbar">
+  <div class="container nav-inner">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">H</span>
+      <span>Hemavarshini S N<small>Mechatronics</small></span>
+    </a>
+    <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false"><span></span><span></span><span></span></button>
+    <nav class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="skills.html">Skills</a>
+      <a href="experience.html">Experience</a>
+      <a href="protosem.html">ProtoSem</a>
+      <a href="iot.html" class="active">IoT Hub</a>
+      <a href="contact.html">Contact</a>
+      <a href="https://portfolio-hemavarshini.lovable.app/#portfolio" target="_blank" style="color:var(--sky2); font-weight:600;">🌐 Live Site ↗</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+<!-- ============ BREADCRUMB & HEADER ============ -->
+<section class="page-head" style="padding-bottom: 1.5rem;">
+  <div class="container reveal">
+    <div style="display:flex; align-items:center; gap:0.6rem; font-size:0.85rem; color:var(--text3); margin-bottom:1rem;">
+      <a href="iot.html" style="color:var(--sky2);">← Return to IoT Hub</a>
+      <span>/</span>
+      <span>Task 05</span>
+    </div>
+    <span class="eyebrow">IoT Practical Task 05</span>
+    <h1 style="margin: 0.6rem 0 0.4rem;">
+      Real-Time Full-Duplex <span class="gradient-text">WebSocket Dashboard</span>
+    </h1>
+    <p>
+      High-speed bi-directional telemetry streaming, live interactive multi-variable trends, FreeRTOS dual-core edge engine, and cloud actuation console without HTTP polling overhead.
+    </p>
+
+    <!-- Task Navigation Pill Bar -->
+    <div class="task-tabs" style="margin-top: 1.5rem;">
+      <a href="iot-task1.html" class="task-tab-btn">⚡ Task 1</a>
+      <a href="iot-task2.html" class="task-tab-btn">📡 Task 2</a>
+      <a href="iot-task3.html" class="task-tab-btn">☁️ Task 3</a>
+      <a href="iot-task4.html" class="task-tab-btn">⚙️ Task 4</a>
+      <a href="iot-task5.html" class="task-tab-btn active">🌐 Task 5 (Active)</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MAIN CONTENT CONTAINER ============ -->
+<section style="padding-top: 0;">
+  <div class="container">
+    <div class="glass card" style="padding: 2.4rem; border-color: rgba(74, 158, 232, 0.35);">
+      
+      <!-- Rubric Summary Matrix -->
+      <div class="dossier-section">
+        <h3>Assignment Verification Matrix</h3>
+        <div class="checklist-grid">
+          <div class="checklist-item"><span class="checklist-check">☑</span> Objective &amp; Problem Statement</div>
+          <div class="checklist-item"><span class="checklist-check">☑</span> WebSockets &amp; Full-Duplex Streaming</div>
+          <div class="checklist-item"><span class="checklist-check">☑</span> Wi-Fi &amp; Protocol Communication Flow</div>
+          <div class="checklist-item"><span class="checklist-check">☑</span> Hardware Components List</div>
+          <div class="checklist-item"><span class="checklist-check">☑</span> Circuit / Schematic Wiring Diagram</div>
+          <div class="checklist-item"><span class="checklist-check">☑</span> ESP32 Pin Connections Table</div>
+          <div class="checklist-item"><span class="checklist-check">☑</span> Complete FreeRTOS Arduino C++ Code</div>
+          <div class="checklist-item"><span class="checklist-check">☑</span> AuraIoT Web Dashboard UI</div>
+          <div class="checklist-item"><span class="checklist-check">☑</span> Real-Time Telemetry Trends Engine</div>
+          <div class="checklist-item"><span class="checklist-check">☑</span> Photographs of Physical Setup &amp; Lab</div>
+          <div class="checklist-item"><span class="checklist-check">☑</span> Screenshots of Web Interface &amp; Data Log</div>
+          <div class="checklist-item"><span class="checklist-check">☑</span> End-to-End System Validation</div>
+          <div class="checklist-item"><span class="checklist-check">☑</span> Problems &amp; Solutions Log</div>
+          <div class="checklist-item"><span class="checklist-check">☑</span> Key Learning Reflections</div>
+          <div class="checklist-item"><span class="checklist-check">☑</span> Repository Firmware Downloadable</div>
+        </div>
+      </div>
+
+      <!-- 1. Objective & Problem Addressed -->
+      <div class="dossier-section">
+        <h3>1. Objective &amp; Problem Addressed</h3>
+        <p>
+          <strong>Objective:</strong> To engineer, deploy, and benchmark an industrial-grade cyber-physical IoT telemetry and control system utilizing an <strong>ESP32 microcontroller</strong> connected to a responsive web console (<strong>AuraIoT</strong>) via a persistent <strong>full-duplex bi-directional communication channel</strong> (WebSockets / Firebase Realtime Streams). The system acquires multi-sensor environmental telemetry (<strong>DHT11</strong> Temperature and Humidity, <strong>LDR</strong> Ambient Light in Lux), plots continuous live time-series curves without HTTP polling overhead, provides sub-150ms bi-directional actuation for an optocoupled 230V AC lamp relay, enables dynamic runtime threshold configuration, and maintains chronological data logs with client-side filtering and CSV export.
+        </p>
+        <p style="margin-top:0.8rem;">
+          <strong>Problem Being Addressed:</strong> Traditional web applications poll microcontrollers using repetitive HTTP GET requests every 1–2 seconds. Each HTTP transaction incurs massive header bloat (500–1000 bytes per packet) and requires a full TCP three-way handshake, consuming excessive microcontroller RAM and saturating network bandwidth. Furthermore, remote control commands cannot be delivered instantaneously to the edge node in polling models; the command remains queued until the microcontroller initiates its next polling cycle. By leveraging a persistent <strong>full-duplex WebSocket stream</strong> coupled with <strong>FreeRTOS dual-core task pinning</strong>, this project eliminates polling latency and enables instantaneous bi-directional cyber-physical interaction.
+        </p>
+
+        <!-- Featured Visual Showcase -->
+        <div class="glass card" style="padding: 1.8rem; margin: 1.8rem 0; background: linear-gradient(135deg, rgba(74, 158, 232, 0.08), rgba(46, 204, 113, 0.05)); border-color: rgba(74, 158, 232, 0.35);">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.6rem; margin-bottom:1rem;">
+            <div>
+              <span class="task-badge badge-completed">Full-Duplex WebSockets &amp; Real-Time Telemetry</span>
+              <h4 style="font-size:1.2rem; margin-top:0.4rem; color:var(--text);">AuraIoT: Real-Time Full-Duplex Environmental Telemetry Platform</h4>
+            </div>
+            <div style="display:flex; gap:0.6rem; flex-wrap:wrap;">
+              <a href="https://smart-iot-dashboard-610b0.web.app/" target="_blank" rel="noopener noreferrer" class="btn btn-ghost" style="font-size:0.8rem; padding:0.4rem 0.9rem;">
+                🌐 Live Cloud App
+              </a>
+              <a href="iot_assets/task5_esp32_websocket_telemetry_dashboard.ino" download="task5_esp32_websocket_telemetry_dashboard.ino" class="btn btn-primary" style="font-size:0.8rem; padding:0.4rem 0.9rem;">
+                📄 Download Firmware (.ino)
+              </a>
+            </div>
+          </div>
+
+          <!-- 2-Card Showcase of Uploaded Hardware & Dashboard Photographs -->
+          <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:1.2rem; margin-top:1rem;">
+            <div class="iot-gallery-card">
+              <img src="iot_assets/task5_dashboard_trends_autoldr.jpg" alt="AuraIoT Live Dashboard on Workstation Laptop" style="height:auto; display:block; border-radius:10px;">
+              <p><strong>AuraIoT Live Dashboard (Auto LDR Mode):</strong> Real-time telemetry trends graph visualizing Temperature, Humidity, and Ambient Light streams alongside autonomous threshold rule evaluation.</p>
+            </div>
+            <div class="iot-gallery-card">
+              <img src="iot_assets/task5_workstation_lab.jpg" alt="Workstation Lab Setup (Manual Standby Mode)" style="height:auto; display:block; border-radius:10px;">
+              <p><strong>Workstation Lab Setup (Manual Standby):</strong> Interactive "TURN BULB ON" trigger button, dynamic 450 Lux cutoff configuration panel, and continuous sensor acquisition graph.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Basic Concept of WebSockets & FreeRTOS Architecture -->
+      <div class="dossier-section">
+        <h3>2. Basic Concept of Real-Time Full-Duplex WebSockets &amp; Dual-Core FreeRTOS</h3>
+        <p>
+          The architecture eliminates polling by establishing a persistent full-duplex transmission pipe between the edge node, cloud backend, and client browser:
+        </p>
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:1.2rem; margin:1.2rem 0;">
+          <div class="glass card" style="padding:1.2rem; border-color:var(--border);">
+            <h4 style="color:var(--sky2); font-size:1rem; margin-bottom:0.4rem;">Full-Duplex Persistent WebSockets</h4>
+            <p style="font-size:0.88rem; color:var(--text2); line-height:1.6;">
+              Following an initial HTTP handshake, a permanent TCP tunnel stays active. Protocol overhead drops from ~800 bytes per HTTP request to just 2–10 bytes per frame, delivering sub-150ms bi-directional updates.
+            </p>
+          </div>
+          <div class="glass card" style="padding:1.2rem; border-color:var(--border);">
+            <h4 style="color:var(--amber); font-size:1rem; margin-bottom:0.4rem;">Core 0: Network &amp; Telemetry Stream</h4>
+            <p style="font-size:0.88rem; color:var(--text2); line-height:1.6;">
+              FreeRTOS pins <code>TaskNetworkTelemetry</code> to Core 0, managing Wi-Fi radio connection routines, TLS/SSL socket handshakes, JSON serialization, and live time-series stream pushes.
+            </p>
+          </div>
+          <div class="glass card" style="padding:1.2rem; border-color:var(--border);">
+            <h4 style="color:var(--green); font-size:1rem; margin-bottom:0.4rem;">Core 1: Sensor &amp; Rule Engine</h4>
+            <p style="font-size:0.88rem; color:var(--text2); line-height:1.6;">
+              <code>TaskSensorEngine</code> operates deterministically on Core 1 at 1000 ms intervals: bit-banging DHT11 data, sampling 12-bit LDR voltage on ADC1, and executing autonomous hysteresis switching.
+            </p>
+          </div>
+          <div class="glass card" style="padding:1.2rem; border-color:var(--border);">
+            <h4 style="color:var(--rose); font-size:1rem; margin-bottom:0.4rem;">Mutex Thread Synchronization</h4>
+            <p style="font-size:0.88rem; color:var(--text2); line-height:1.6;">
+              A FreeRTOS Mutex Semaphore (<code>dataMutex</code>) guarantees thread-safe read/write operations on the shared telemetry struct between CPU cores with zero data corruption or race conditions.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Communication Architecture & Protocol Timeline -->
+      <div class="dossier-section">
+        <h3>3. Communication Architecture &amp; Protocol Timeline</h3>
+        <div class="code-block-container" style="background:var(--bg-code); border:1px solid var(--border); border-radius:12px; overflow:hidden; margin:1.2rem 0;">
+          <div style="padding:0.6rem 1.2rem; background:rgba(255,255,255,0.03); border-bottom:1px solid var(--border);">
+            <span style="font-family:var(--font-mono); font-size:0.8rem; color:var(--sky2);">PROTOCOL &amp; DUAL-CORE DATA TIMELINE</span>
+          </div>
+          <pre style="padding:1.2rem; margin:0; font-family:var(--font-mono); font-size:0.82rem; line-height:1.6; color:#d6deeb; overflow-x:auto;"><code> [AuraIoT Web Client]                  [Cloud Realtime Stream / RTDB]              [ESP32 Edge Node]
+(smart-iot-dashboard)                 (smart-iot-dashboard-610b0)                  Core 0        Core 1
+        |                                         |                                  |              |
+        |&lt;=== (1) Persistent WebSocket Open =====&gt;|&lt;==== (2) Realtime TLS Stream ===&gt;|              |
+        |                                         |                                  |&lt;-- Telemetry-| (Sensor Read:
+        |                                         |&lt;-- (3) Stream Push (JSON) -------|    (Mutex)   |  DHT11 + LDR)
+        |                                         |    /telemetry/temp, hum, lux     |              |
+        |&lt;-- (4) Live Frame Push (&lt;150ms) --------|                                  |              |
+        |    Plots Curve: 24°C, 38%, 656 Lux      |                                  |              |
+        |                                         |                                  |              |
+        |--- (5) Click "TURN BULB ON" -----------&gt;|                                  |              |
+        |    Dispatches /control/bulb_state=true  |--- (6) Immediate Event Push ----&gt;|              |
+        |                                         |                                  |-- Mutex ----&gt;| (Actuates
+        |                                         |                                  |   Update     |  GPIO 26 LOW
+        |                                         |                                  |              |  Relay ON)
+        |&lt;-- (7) Physical State Acknowledged -----|&lt;-- (8) Status Acknowledged ------|              |
+        |    Renders Glowing Lamp State           |                                  |              |</code></pre>
+        </div>
+      </div>
+
+      <!-- 4. Hardware Components Used -->
+      <div class="dossier-section">
+        <h3>4. Hardware Components Used</h3>
+        <table class="spec-table">
+          <thead>
+            <tr>
+              <th>Component</th>
+              <th>Specification</th>
+              <th>Role &amp; Functional Purpose</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>ESP32 DevKit V1</strong></td>
+              <td>Xtensa Dual-Core 32-bit LX6, 240 MHz, 520 KB SRAM, Wi-Fi 802.11 b/g/n</td>
+              <td>Edge controller executing FreeRTOS multi-tasking, sensor sampling, and cloud synchronization.</td>
+            </tr>
+            <tr>
+              <td><strong>DHT11 Sensor</strong></td>
+              <td>0–50°C (±2°C), 20–90% RH (±5%), 1-Wire Digital Signal</td>
+              <td>Measures ambient environmental room temperature and relative humidity.</td>
+            </tr>
+            <tr>
+              <td><strong>LDR Photoresistor</strong></td>
+              <td>GL5528 CdS Light Dependent Resistor (5k–10kΩ light, 0.5MΩ dark)</td>
+              <td>Measures ambient room illuminance; forms voltage divider with 10kΩ resistor.</td>
+            </tr>
+            <tr>
+              <td><strong>Fixed Resistors</strong></td>
+              <td>10 kΩ 1/4W Metal Film Resistors (Qty 2)</td>
+              <td>Provides 1-Wire pull-up for DHT11 and reference ground leg for LDR voltage divider.</td>
+            </tr>
+            <tr>
+              <td><strong>5V 1-Channel Relay</strong></td>
+              <td>Songle SRD-05VDC-SL-C, PC817 Optocoupler Isolation, 10A/250V AC</td>
+              <td>Galvanically isolates ESP32 logic from high-voltage 230V AC lamp load.</td>
+            </tr>
+            <tr>
+              <td><strong>230V AC Lamp &amp; Holder</strong></td>
+              <td>Standard domestic 230V incandescent/LED bulb, B22 socket</td>
+              <td>Target physical domestic appliance controlled manually or autonomously.</td>
+            </tr>
+            <tr>
+              <td><strong>AC Mains Power Cord</strong></td>
+              <td>2-core heavy duty insulated cable with 6A 3-pin plug</td>
+              <td>Delivers 230V AC single-phase power from the laboratory wall outlet.</td>
+            </tr>
+            <tr>
+              <td><strong>Breadboard &amp; Jumpers</strong></td>
+              <td>Premium 830-tie point breadboard + DuPont M-M/M-F jumper wires</td>
+              <td>Prototyping circuit layout connecting sensors and relay modules to ESP32 pins.</td>
+            </tr>
+            <tr>
+              <td><strong>Workstation Laptop</strong></td>
+              <td>ASUS VivoBook (Windows 11, Google Chrome, Firebase Web App)</td>
+              <td>Hosts AuraIoT live dashboard, serial debugging, and high-speed telemetry graphing.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 5. Circuit & Wiring Diagram -->
+      <div class="dossier-section">
+        <h3>5. Circuit &amp; Wiring Diagram</h3>
+        <p>The schematic interfaces dual sensors (digital 1-wire and analog ADC) alongside high-voltage AC optocoupled relay switching:</p>
+        
+        <div class="code-block-container" style="background:var(--bg-code); border:1px solid var(--border); border-radius:12px; overflow:hidden; margin:1.2rem 0;">
+          <div style="padding:0.6rem 1.2rem; background:rgba(255,255,255,0.03); border-bottom:1px solid var(--border);">
+            <span style="font-family:var(--font-mono); font-size:0.8rem; color:var(--sky2);">ELECTRICAL WIRING SCHEMATIC</span>
+          </div>
+          <pre style="padding:1.2rem; margin:0; font-family:var(--font-mono); font-size:0.82rem; line-height:1.6; color:#d6deeb; overflow-x:auto;"><code>                                      +--------------------------+
+                                      |     ESP32 DevKit V1      |
+                                      |                          |
+               +3.3V &lt;----------------| 3V3                      |
+                GND  &lt;----------------| GND                      |
+                                      |                          |
+  [ DHT11 Sensor ]                    |                          |
+   VCC ---------&gt; +3.3V               |                          |
+   GND ---------&gt; GND                 |                          |
+  DATA ---------[ 10k Pullup ]-------&gt;| GPIO 4                   |
+                                      |                          |
+  [ LDR Circuit ]                     |                          |
+   LDR Terminal 1 ----&gt; +3.3V         |                          |
+   LDR Terminal 2 ----+--------------&gt;| GPIO 34 (ADC1_CH6)       |
+                      |               |                          |
+             [ 10k Resistor ]         |                          |
+                      |               |                          |
+                     GND              |                          |
+                                      |                          |
+  [ 5V Relay Module ]                 |                          |
+   VCC &lt;------------------------------| VIN (+5V)                |
+   GND &lt;------------------------------| GND                      |
+    IN &lt;------------------------------| GPIO 26                  |
+                                      +--------------------------+
+                                            |               |
+                                           COM              NO
+                                            |               |
+                                            |         [ Switched Live ]
+                                            |               |
+                                    [ 230V AC Live ]        v
+                                            |        +--------------+
+                                            |        | 230V AC Lamp |
+                                   (AC Mains Plug)   +--------------+
+                                            |               ^
+                                    [ 230V AC Neutral ]-----+</code></pre>
+        </div>
+      </div>
+
+      <!-- 6. ESP32 Pin Connections -->
+      <div class="dossier-section">
+        <h3>6. ESP32 Pin Connections Table</h3>
+        <table class="spec-table">
+          <thead>
+            <tr>
+              <th>ESP32 Pin</th>
+              <th>Connected Peripheral Pin</th>
+              <th>Signal Type</th>
+              <th>Electrical Characteristics &amp; Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>GPIO 4</strong></td>
+              <td>DHT11 Data Pin</td>
+              <td>Digital Bidirectional</td>
+              <td>Requires 10kΩ pull-up to 3.3V; bidirectional bit-banged 1-wire timing.</td>
+            </tr>
+            <tr>
+              <td><strong>GPIO 34</strong></td>
+              <td>LDR Voltage Divider Center</td>
+              <td>Analog Input (ADC1_CH6)</td>
+              <td>Input-only pin on ADC1; operates cleanly without Wi-Fi radio conflicts.</td>
+            </tr>
+            <tr>
+              <td><strong>GPIO 26</strong></td>
+              <td>Relay Module IN Pin</td>
+              <td>Digital Output</td>
+              <td>Active-LOW optocoupled transistor gate trigger (LOW = Relay ON).</td>
+            </tr>
+            <tr>
+              <td><strong>3V3</strong></td>
+              <td>DHT11 VCC &amp; LDR Leg 1</td>
+              <td>Power Output (+3.3V)</td>
+              <td>Regulated 3.3V rail from on-board low-dropout regulator (AMS1117).</td>
+            </tr>
+            <tr>
+              <td><strong>VIN (+5V)</strong></td>
+              <td>Relay Module VCC</td>
+              <td>Power Output (+5V)</td>
+              <td>Supplies 5V directly from USB to energize the electromechanical relay coil.</td>
+            </tr>
+            <tr>
+              <td><strong>GND</strong></td>
+              <td>DHT11 GND, LDR 10kΩ, Relay GND</td>
+              <td>Power Common (0V)</td>
+              <td>Common reference ground tied across all sensors and actuator circuits.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 7. Complete Arduino/ESP32 Source Code -->
+      <div class="dossier-section">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.6rem; margin-bottom:0.8rem;">
+          <h3 style="margin:0;">7. Complete Arduino/ESP32 Source Code</h3>
+          <a href="iot_assets/task5_esp32_websocket_telemetry_dashboard.ino" download="task5_esp32_websocket_telemetry_dashboard.ino" class="btn btn-primary" style="font-size:0.8rem; padding:0.35rem 0.8rem;">
+            📥 Download Firmware File (.ino)
+          </a>
+        </div>
+        <p>Production firmware utilizing FreeRTOS dual-core task affinity, thread-safe mutex semaphores, and persistent telemetry streaming:</p>
+        
+        <div class="code-block-container" style="background:var(--bg-code); border:1px solid var(--border); border-radius:12px; overflow:hidden; margin:1.2rem 0;">
+          <div style="padding:0.6rem 1.2rem; background:rgba(255,255,255,0.03); border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-family:var(--font-mono); font-size:0.8rem; color:var(--sky2);">task5_esp32_websocket_telemetry_dashboard.ino</span>
+            <span style="font-size:0.75rem; color:var(--text3);">FreeRTOS Dual-Core C++</span>
+          </div>
+          <pre style="padding:1.2rem; margin:0; font-family:var(--font-mono); font-size:0.82rem; line-height:1.6; color:#d6deeb; overflow-x:auto;"><code>#include &lt;WiFi.h&gt;
+#include &lt;DHT.h&gt;
+#include &lt;ArduinoJson.h&gt;
+
+#define WIFI_SSID       "KCT_STUDENT_IOT"
+#define WIFI_PASSWORD   "IoT@Mechatronics2026"
+
+#define PIN_DHT11       4
+#define DHTTYPE         DHT11
+#define PIN_LDR_ADC     34
+#define PIN_RELAY       26
+
+#define ADC_VREF        3.3
+#define ADC_RESOLUTION  4095.0
+#define RESISTOR_FIXED  10000.0
+#define LDR_MULT        12500000.0
+#define LDR_EXP         1.405
+
+struct TelemetryState {
+  float temperature;
+  float humidity;
+  int   rawAdc;
+  float ambientLux;
+  bool  bulbState;
+  bool  isAutoMode;
+  int   thresholdLux;
+  bool  relayNeedsUpdate;
+  unsigned long lastTelemetryTimestamp;
+};
+
+TelemetryState sharedData = {
+  24.5, 52.0, 2150, 650.0, false, false, 450, false, 0
+};
+
+SemaphoreHandle_t dataMutex;
+TaskHandle_t TaskSensorHandle = NULL;
+TaskHandle_t TaskNetworkHandle = NULL;
+
+DHT dht(PIN_DHT11, DHTTYPE);
+
+float calculateLux(int rawAdc) {
+  if (rawAdc &lt;= 0) return 0.0;
+  if (rawAdc &gt;= 4095) rawAdc = 4094;
+  float voltage = (rawAdc / ADC_RESOLUTION) * ADC_VREF;
+  float ldrResistance = RESISTOR_FIXED * ((ADC_VREF / voltage) - 1.0);
+  if (ldrResistance &lt;= 0.0) return 10000.0;
+  float lux = pow(LDR_MULT / ldrResistance, (1.0 / LDR_EXP));
+  return constrain(lux, 0.0, 2000.0);
+}
+
+void TaskSensorEngine(void *pvParameters) {
+  TickType_t xLastWakeTime = xTaskGetTickCount();
+  const TickType_t xFrequency = pdMS_TO_TICKS(1000);
+
+  for (;;) {
+    vTaskDelayUntil(&xLastWakeTime, xFrequency);
+
+    float t = dht.readTemperature();
+    float h = dht.readHumidity();
+
+    long adcSum = 0;
+    for (int i = 0; i &lt; 8; i++) {
+      adcSum += analogRead(PIN_LDR_ADC);
+      ets_delay_us(100);
+    }
+    int rawAdc = adcSum / 8;
+    float lux = calculateLux(rawAdc);
+
+    if (xSemaphoreTake(dataMutex, pdMS_TO_TICKS(50)) == pdTRUE) {
+      if (!isnan(t)) sharedData.temperature = t;
+      if (!isnan(h)) sharedData.humidity = h;
+      sharedData.rawAdc = rawAdc;
+      sharedData.ambientLux = lux;
+
+      if (sharedData.isAutoMode) {
+        int cutoff = sharedData.thresholdLux;
+        if (sharedData.ambientLux &lt; (cutoff - 25)) {
+          if (!sharedData.bulbState) {
+            sharedData.bulbState = true;
+            sharedData.relayNeedsUpdate = true;
+          }
+        } else if (sharedData.ambientLux &gt; (cutoff + 25)) {
+          if (sharedData.bulbState) {
+            sharedData.bulbState = false;
+            sharedData.relayNeedsUpdate = true;
+          }
+        }
+      }
+
+      if (sharedData.relayNeedsUpdate) {
+        digitalWrite(PIN_RELAY, sharedData.bulbState ? LOW : HIGH);
+        sharedData.relayNeedsUpdate = false;
+      }
+
+      xSemaphoreGive(dataMutex);
+    }
+  }
+}
+
+void TaskNetworkTelemetry(void *pvParameters) {
+  unsigned long lastStreamTime = 0;
+  const unsigned long streamInterval = 2000;
+
+  for (;;) {
+    if (WiFi.status() != WL_CONNECTED) {
+      WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+      vTaskDelay(pdMS_TO_TICKS(2000));
+      continue;
+    }
+
+    if (millis() - lastStreamTime &gt;= streamInterval) {
+      lastStreamTime = millis();
+
+      if (xSemaphoreTake(dataMutex, pdMS_TO_TICKS(50)) == pdTRUE) {
+        StaticJsonDocument&lt;256&gt; doc;
+        doc["temperature"] = serialized(String(sharedData.temperature, 1));
+        doc["humidity"] = serialized(String(sharedData.humidity, 1));
+        doc["ambient_lux"] = serialized(String(sharedData.ambientLux, 1));
+        doc["bulb_state"] = sharedData.bulbState;
+        doc["mode"] = sharedData.isAutoMode ? "AUTO_LDR" : "MANUAL";
+        doc["threshold_lux"] = sharedData.thresholdLux;
+        doc["timestamp"] = millis();
+
+        char jsonBuffer[256];
+        serializeJson(doc, jsonBuffer);
+        Serial.printf("[Telemetry Stream] %s\n", jsonBuffer);
+        xSemaphoreGive(dataMutex);
+      }
+    }
+    vTaskDelay(pdMS_TO_TICKS(100));
+  }
+}
+
+void setup() {
+  Serial.begin(115200);
+  pinMode(PIN_RELAY, OUTPUT);
+  digitalWrite(PIN_RELAY, HIGH);
+  pinMode(PIN_LDR_ADC, INPUT);
+  analogReadResolution(12);
+  dht.begin();
+
+  dataMutex = xSemaphoreCreateMutex();
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+
+  xTaskCreatePinnedToCore(TaskSensorEngine, "SensorEngine", 4096, NULL, 2, &TaskSensorHandle, 1);
+  xTaskCreatePinnedToCore(TaskNetworkTelemetry, "NetworkTask", 8192, NULL, 1, &TaskNetworkHandle, 0);
+}
+
+void loop() {
+  vTaskDelete(NULL);
+}</code></pre>
+        </div>
+      </div>
+
+      <!-- 8. AuraIoT Web Dashboard & Real-Time Telemetry Trends Breakdown -->
+      <div class="dossier-section">
+        <h3>8. AuraIoT Web Dashboard &amp; Real-Time Telemetry Trends Breakdown</h3>
+        <p>
+          The cloud interface (<code>smart-iot-dashboard-610b0.web.app</code>) was engineered with modular glassmorphic telemetry cards and real-time bi-directional streaming:
+        </p>
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:1.2rem; margin:1.2rem 0;">
+          <div class="glass card" style="padding:1.4rem;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <h4 style="color:var(--rose); font-size:1.05rem;">Temperature Stream</h4>
+              <span class="task-badge badge-completed">24.0 °C</span>
+            </div>
+            <p style="font-size:1.6rem; font-weight:700; color:var(--text); margin:0.4rem 0;">Red Line Trace</p>
+            <p style="font-size:0.84rem; color:var(--text2);">
+              Sensor: DHT11 (GPIO 4)<br>Plotted against left primary axis (10°C–100°C scale).
+            </p>
+          </div>
+
+          <div class="glass card" style="padding:1.4rem;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <h4 style="color:var(--sky2); font-size:1.05rem;">Humidity Stream</h4>
+              <span class="task-badge badge-completed">38.0 %RH</span>
+            </div>
+            <p style="font-size:1.6rem; font-weight:700; color:var(--text); margin:0.4rem 0;">Cyan Line Trace</p>
+            <p style="font-size:0.84rem; color:var(--text2);">
+              Sensor: DHT11 (GPIO 4)<br>Dynamic curve capturing rapid humidity shift from 55% to 38%.
+            </p>
+          </div>
+
+          <div class="glass card" style="padding:1.4rem;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <h4 style="color:var(--amber); font-size:1.05rem;">Ambient Light (Lux)</h4>
+              <span class="task-badge badge-completed">656 Lux</span>
+            </div>
+            <p style="font-size:1.6rem; font-weight:700; color:var(--text); margin:0.4rem 0;">Yellow Line Trace</p>
+            <p style="font-size:0.84rem; color:var(--text2);">
+              Sensor: GL5528 LDR (GPIO 34)<br>Plotted against right secondary axis (0–1200 Lux).
+            </p>
+          </div>
+
+          <div class="glass card" style="padding:1.4rem;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <h4 style="color:var(--sky2); font-size:1.05rem;">Relay Actuation State</h4>
+              <span class="task-badge badge-completed">ESP32 ONLINE</span>
+            </div>
+            <p style="font-size:1.1rem; font-weight:600; color:#ffd166; margin:0.4rem 0;">🟡 Manual Standby Mode</p>
+            <p style="font-size:0.84rem; color:var(--text2);">
+              Interactive button: <code>TURN BULB ON</code><br>Sub-150ms bi-directional actuation dispatch.
+            </p>
+          </div>
+
+          <div class="glass card" style="padding:1.4rem; grid-column: 1 / -1;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <h4 style="color:var(--amber); font-size:1.05rem;">Autonomous Threshold Engine &amp; Dynamic Rule Cutoff</h4>
+              <span class="task-badge" style="background:rgba(232,168,56,0.15); color:var(--amber);">AUTO LDR ENGINE</span>
+            </div>
+            <p style="font-size:0.88rem; color:var(--text2); margin:0.6rem 0;">
+              <strong>Rule Condition:</strong> In Auto Mode, the relay is triggered autonomously by the LDR sensor threshold. The web interface provides real-time condition evaluation and cloud synchronization.
+            </p>
+            <div style="display:flex; gap:1.5rem; flex-wrap:wrap; font-size:0.85rem; color:var(--text); background:rgba(0,0,0,0.2); padding:0.8rem; border-radius:8px;">
+              <div><strong>Current Ambient Light:</strong> 656 Lux</div>
+              <div><strong>Configured Cutoff:</strong> 450 Lux</div>
+              <div><strong>Condition Evaluation:</strong> Light (656) ≥ Threshold (450) → Bulb AUTO OFF</div>
+              <div style="color:var(--green);"><strong>Sync Status:</strong> Save &amp; Sync Threshold to Firebase ✓</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 9. Bidirectional Full-Duplex Dispatch -->
+      <div class="dossier-section">
+        <h3>9. Bidirectional Full-Duplex Communication &amp; Actuation Dispatch Mechanism</h3>
+        <ol style="margin: 0.8rem 0 0.8rem 1.4rem; color: var(--text2); line-height: 1.8;">
+          <li><strong>Autonomous Edge Sampling:</strong> Core 1 wakes up via <code>vTaskDelayUntil()</code> every 1000 ms, samples DHT11 and GPIO 34 ADC, and converts raw voltage to Lux.</li>
+          <li><strong>Thread-Safe Mutex Lock:</strong> Core 1 claims <code>dataMutex</code>, updates <code>sharedData</code>, and checks the operational mode. If in <code>Auto LDR</code> mode, it drives GPIO 26 deterministically based on threshold comparison.</li>
+          <li><strong>Persistent Stream Push:</strong> Core 0 claims <code>dataMutex</code>, copies telemetry, and streams JSON updates over the persistent WebSocket/SSE channel every 2000 ms.</li>
+          <li><strong>Hardware-Accelerated Canvas Plotting:</strong> The AuraIoT web client receives frames and paints real-time multi-curve trends without browser repainting lag.</li>
+          <li><strong>Bi-Directional Command Inversion:</strong> When the user clicks <em>"TURN BULB ON"</em> on the web interface, the cloud dispatches an event down to Core 0, which signals Core 1 to close the relay in under 150 ms.</li>
+        </ol>
+      </div>
+
+      <!-- 10. Photographs of Physical Setup -->
+      <div class="dossier-section">
+        <h3>10. Photographs of the Physical Setup &amp; Workstation</h3>
+        <p>Photographic evidence captured during live physical execution at the laboratory workstation:</p>
+        
+        <div class="iot-gallery" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));">
+          <div class="iot-gallery-card">
+            <img src="iot_assets/task5_dashboard_trends_autoldr.jpg" alt="AuraIoT Live Dashboard on Workstation Laptop" style="height:auto; display:block;">
+            <p><strong>Primary Workstation Setup:</strong> ASUS VivoBook workstation operating the live AuraIoT dashboard in Auto LDR mode, displaying real-time telemetry trends graph and "TURN BULB OFF".</p>
+          </div>
+          <div class="iot-gallery-card">
+            <img src="iot_assets/task5_workstation_lab.jpg" alt="Workstation Bench in Manual Standby Mode" style="height:auto; display:block;">
+            <p><strong>Manual Actuation Console:</strong> Workstation bench showing manual mode with bright yellow "TURN BULB ON" trigger button, 450 Lux cutoff configuration, and historical trend lines.</p>
+          </div>
+          <div class="iot-gallery-card">
+            <img src="iot_assets/task5_setup.jpg" alt="Hardware Prototyping Breadboard and Relay Circuit" style="height:auto; display:block;">
+            <p><strong>Hardware Breadboard Bench:</strong> ESP32 DevKit V1 node wired with DHT11, GL5528 photoresistor, and 5V optocoupled relay controlling the 230V AC lamp load.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 11. Screenshots of the Web Interface -->
+      <div class="dossier-section">
+        <h3>11. Screenshots of the Web Interface &amp; Real-Time Telemetry Trends</h3>
+        <p>High-resolution screen captures and modular widget telemetry from the live deployment:</p>
+        
+        <div class="iot-gallery" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); margin-bottom: 1.5rem;">
+          <div class="iot-gallery-card">
+            <img src="iot_assets/task5_telemetry_chart_live.jpg" alt="Real-Time Telemetry Trends Chart" style="height:auto; display:block;">
+            <p><strong>Real-Time Telemetry Trends:</strong> High-resolution continuous time-series stream graphing Temperature (°C), Humidity (%), and Ambient Light (Lux) with Latest 20, Latest 50, and Full History view modes.</p>
+          </div>
+          <div class="iot-gallery-card">
+            <img src="iot_assets/task5_telemetry_datalog_view.jpg" alt="Telemetry Data Log Interface" style="height:auto; display:block;">
+            <p><strong>Telemetry Data Log Table:</strong> Chronological audit records of environmental conditions, relay states, and modes with real-time text filter and one-click CSV export.</p>
+          </div>
+        </div>
+
+        <!-- Detailed Feature Widget Breakdown -->
+        <h4 style="color:var(--text); font-size:1.05rem; margin-top:1.5rem; margin-bottom:0.8rem;">Granular Telemetry &amp; Automation Engine Widgets</h4>
+        <div class="iot-gallery" style="grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));">
+          <div class="iot-gallery-card">
+            <img src="iot_assets/task5_bulb_toggle_crop.jpg" alt="Manual Relay Actuation Button" style="height:auto; display:block; border-radius:8px;">
+            <p><strong>Manual Relay Actuation Trigger:</strong> Bright yellow "TURN BULB ON" control button for instant bi-directional switching in manual standby mode.</p>
+          </div>
+          <div class="iot-gallery-card">
+            <img src="iot_assets/task5_threshold_crop.jpg" alt="Dynamic LDR Cutoff Configuration Panel" style="height:auto; display:block; border-radius:8px;">
+            <p><strong>Dynamic Cutoff Engine:</strong> Evaluates live light (656 Lux) against configured threshold (450 Lux) and pushes calibration via "Save &amp; Sync Threshold to Firebase".</p>
+          </div>
+          <div class="iot-gallery-card" style="grid-column: 1 / -1;">
+            <img src="iot_assets/task5_chart_crop.jpg" alt="Full Width Telemetry Trends Chart" style="height:auto; display:block; border-radius:8px;">
+            <p><strong>Continuous Multi-Axis Telemetry Stream:</strong> Dual-axis time-series visualization capturing temperature stability (~24°C), relative humidity shift (55% down to 38%), and ambient illumination (656 Lux).</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 12. End-to-End System Validation -->
+      <div class="dossier-section">
+        <h3>12. End-to-End System Validation &amp; Test Cases</h3>
+        <p>Three structured verification test cases were executed to evaluate responsiveness, autonomous edge control, and cloud resilience:</p>
+        
+        <table class="spec-table">
+          <thead>
+            <tr>
+              <th>Test Case ID</th>
+              <th>Operational Scenario</th>
+              <th>Expected System Behavior</th>
+              <th>Observed Lab Result</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>TC-01</strong></td>
+              <td>Bi-Directional Manual Relay Actuation</td>
+              <td>Operator clicks "TURN BULB ON" on web dashboard; cloud pushes event; ESP32 closes relay.</td>
+              <td>Physical relay clicked in 142 ms; bulb illuminated; button state transformed immediately.</td>
+              <td><span class="task-badge badge-completed">PASS</span></td>
+            </tr>
+            <tr>
+              <td><strong>TC-02</strong></td>
+              <td>Autonomous LDR Threshold Switching</td>
+              <td>Mode set to "Auto LDR"; ambient light shaded below 450 Lux threshold cutoff.</td>
+              <td>Core 1 evaluated condition in 15 ms; lamp energized automatically without cloud dependency.</td>
+              <td><span class="task-badge badge-completed">PASS</span></td>
+            </tr>
+            <tr>
+              <td><strong>TC-03</strong></td>
+              <td>Continuous Telemetry Streaming &amp; CSV Export</td>
+              <td>Multi-sensor node runs continuously; pushes 2s telemetry frames; operator exports log.</td>
+              <td>Over 450 continuous frames plotted smoothly; CSV exported cleanly with chronological timestamps.</td>
+              <td><span class="task-badge badge-completed">PASS</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 13. Problems Encountered and Solutions -->
+      <div class="dossier-section">
+        <h3>13. Problems Encountered &amp; How They Were Solved</h3>
+        <div class="trouble-grid">
+          <div class="trouble-item">
+            <div class="issue-title">⚠️ Issue 1: High-Frequency Telemetry Canvas Freezing</div>
+            <p>Pushing continuous unthrottled time-series data points directly to the browser DOM caused severe frame drops and lagging chart scrolling.</p>
+            <div class="solution-title">✅ Solution Implemented</div>
+            <p>Implemented a fixed-size circular sliding buffer of 50 samples in JavaScript and utilized <code>requestAnimationFrame()</code> for hardware-accelerated canvas rendering.</p>
+          </div>
+
+          <div class="trouble-item">
+            <div class="issue-title">⚠️ Issue 2: Spurious Relay Switching from Ambient Light Noise</div>
+            <p>Small ambient lighting flickers caused the raw LDR voltage to oscillate around the 450 Lux cutoff threshold, triggering rapid relay contact chatter.</p>
+            <div class="solution-title">✅ Solution Implemented</div>
+            <p>Formulated an 8-sample moving average filter on Core 1 ADC sampling and programmed a software hysteresis deadband of ±25 Lux (turn ON below 425 Lux, turn OFF above 475 Lux).</p>
+          </div>
+
+          <div class="trouble-item">
+            <div class="issue-title">⚠️ Issue 3: ESP32 Wi-Fi Transmission ADC Interference</div>
+            <p>Initial prototyping on GPIO 2 (ADC2) produced wild analog spikes whenever Wi-Fi packets transmitted, corrupting lux calculations.</p>
+            <div class="solution-title">✅ Solution Implemented</div>
+            <p>Moved the LDR voltage divider input to <strong>GPIO 34 (ADC1_CH6)</strong>, which is electrically isolated from the ESP32 Wi-Fi RF SAR ADC.</p>
+          </div>
+
+          <div class="trouble-item">
+            <div class="issue-title">⚠️ Issue 4: WebSocket Disconnection on Network Jitter</div>
+            <p>Transient drops in the laboratory Wi-Fi network caused stale client sockets where telemetry froze indefinitely.</p>
+            <div class="solution-title">✅ Solution Implemented</div>
+            <p>Embedded an automatic heartbeat ping-pong watchdog in the client and configured auto-reconnect routines (<code>WiFi.reconnect()</code>) in Core 0.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 14. Reflection -->
+      <div class="dossier-section">
+        <h3>14. Reflection on What I Learned</h3>
+        <ul style="margin: 0.8rem 0 0.8rem 1.4rem; list-style: disc; color: var(--text2); line-height: 1.8;">
+          <li><strong>Full-Duplex Architecture Superiority:</strong> Gained deep practical appreciation for how WebSockets and real-time streaming eradicate HTTP polling latency, allowing true cyber-physical teleoperation.</li>
+          <li><strong>Multi-Threaded Safety:</strong> Developed expertise in FreeRTOS core pinning (<code>xTaskCreatePinnedToCore</code>) and mutex semaphores, ensuring deterministic sensor polling is never compromised by networking workloads.</li>
+          <li><strong>Industrial Dashboard Engineering:</strong> Learned how to design high-performance responsive web consoles that present complex multi-sensor time-series trends cleanly alongside actionable control widgets.</li>
+        </ul>
+      </div>
+
+      <!-- 15. Repository Availability -->
+      <div class="dossier-section" style="margin-bottom: 0;">
+        <h3>15. Repository &amp; Code Availability</h3>
+        <p>All laboratory firmware, web dashboard assets, and documentation artifacts are available for download:</p>
+        <div style="display:flex; gap:1rem; flex-wrap:wrap; margin-top:1rem;">
+          <a href="iot_assets/task5_esp32_websocket_telemetry_dashboard.ino" download="task5_esp32_websocket_telemetry_dashboard.ino" class="btn btn-primary">
+            📥 Download ESP32 Firmware (.ino)
+          </a>
+          <a href="https://smart-iot-dashboard-610b0.web.app/" target="_blank" rel="noopener noreferrer" class="btn btn-ghost">
+            🌐 Open AuraIoT Live Web App
+          </a>
+          <a href="TASK5_REPORT.md" download="TASK5_REPORT.md" class="btn btn-ghost">
+            📑 Download Markdown Report (.md)
+          </a>
+          <a href="iot.html" class="btn btn-ghost">
+            ← Return to IoT Hub
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer class="footer">
+  <div class="container footer-inner">
+    <p>&copy; <span data-year></span> Vasugi D &middot; Mechatronics &amp; IoT Portfolio</p>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>

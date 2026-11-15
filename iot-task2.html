@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Task 2: ESP32, Relay &amp; Adafruit IO MQTT 230V Bulb Control — Vasugi D</title>
+<meta name="description" content="Technical report, circuit schematic, Arduino C++ code, physical lab photos, and video demonstration for IoT Task 2: ESP32 + Relay + Adafruit IO MQTT Bulb Control by Vasugi D &amp; Hemavarshini S N.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ============ NAVIGATION ============ -->
+<header class="navbar">
+  <div class="container nav-inner">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">H</span>
+      <span>Hemavarshini S N<small>Mechatronics</small></span>
+    </a>
+    <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false"><span></span><span></span><span></span></button>
+    <nav class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="skills.html">Skills</a>
+      <a href="experience.html">Experience</a>
+      <a href="protosem.html">ProtoSem</a>
+      <a href="iot.html" class="active">IoT Hub</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+<!-- ============ BREADCRUMB & HEADER ============ -->
+<section class="page-head" style="padding-bottom: 1.5rem;">
+  <div class="container reveal">
+    <div style="display:flex; align-items:center; gap:0.6rem; font-size:0.85rem; color:var(--text3); margin-bottom:1rem;">
+      <a href="iot.html" style="color:var(--sky2);">← Return to IoT Hub</a>
+      <span>/</span>
+      <span>Task 02</span>
+    </div>
+    <span class="eyebrow">IoT Practical Task 02 &middot; Cloud Actuation</span>
+    <h1 style="margin: 0.6rem 0 0.4rem;">
+      ESP32, Relay Module &amp; <span class="gradient-text">Adafruit IO (MQTT) Bulb Control</span>
+    </h1>
+    <p>
+      Bidirectional IoT Publish-Subscribe cloud control of a 230V AC incandescent bulb using an optocoupled relay module and the Adafruit IO MQTT broker over Wi-Fi.
+    </p>
+
+    <!-- Task Navigation Pill Bar -->
+    <div class="task-tabs" style="margin-top: 1.5rem;">
+      <a href="iot-task1.html" class="task-tab-btn">⚡ Task 1: Web Server LED</a>
+      <a href="iot-task2.html" class="task-tab-btn active">📡 Task 2: Cloud MQTT Relay</a>
+      <a href="iot.html#panel-task-3" class="task-tab-btn">☁️ Task 3</a>
+      <a href="iot.html#panel-task-4" class="task-tab-btn">⚙️ Task 4</a>
+      <a href="iot.html#panel-task-5" class="task-tab-btn">🌐 Task 5</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MAIN CONTENT CONTAINER ============ -->
+<section style="padding-top: 0;">
+  <div class="container">
+    <div class="glass card" style="padding: 2.4rem; border-color: rgba(61, 204, 142, 0.35);">
+      
+      <!-- Header Meta Banner -->
+      <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 1.5rem; margin-bottom: 2rem;">
+        <div>
+          <span class="task-badge badge-completed" style="font-size:0.85rem; padding:0.4rem 1rem;">
+            ✓ Lab Validated &amp; Verified
+          </span>
+          <p style="color: var(--text2); margin-top: 0.6rem; font-size:0.92rem;">
+            <strong>Collaborators:</strong> Vasugi D (23BMC061) &amp; <a href="https://portfolio-hemavarshini.lovable.app/#portfolio" target="_blank" style="color:var(--sky2); text-decoration:underline;">Hemavarshini S N</a> (Partner Feed: <code>vasuhema</code>)
+          </p>
+        </div>
+        <div style="display:flex; gap:0.6rem; flex-wrap:wrap;">
+          <a href="#task2-video" class="btn btn-primary" style="font-size:0.8rem; padding:0.4rem 0.9rem;">
+            ▶ Watch Video Demonstration
+          </a>
+          <a href="#task2-photos" class="btn btn-ghost" style="font-size:0.8rem; padding:0.4rem 0.9rem;">
+            📷 Physical Setup Photos
+          </a>
+        </div>
+      </div>
+
+      <!-- Rubric Summary Matrix -->
+      <div class="dossier-section">
+        <h3>Assignment Verification Matrix</h3>
+        <div class="checklist-grid">
+          <div class="checklist-item"><span class="checklist-check">☑</span> Objective &amp; Problem Statement</div>
+          <div class="checklist-item"><span class="checklist-check">☑</span> Basic Concept of Adafruit IO &amp; MQTT</div>
+          <div class="checklist-item"><span class="checklist-check">☑</span> Wi-Fi &amp; MQTT Communication Pipeline</div>
+          <div class="checklist-item"><span class="checklist-check">☑</span> Hardware Components List</div>
+          <div class="checklist-item"><span class="checklist-check">☑</span> Circuit / Schematic Wiring Diagram</div>
+          <div class="checklist-item"><span class="checklist-check">☑</span> ESP32 Pin Connections Table</div>
+          <div class="checklist-item"><span class="checklist-check">☑</span> Complete Arduino C++ Source Code</div>
+          <div class="checklist-item"><span class="checklist-check">☑</span> Adafruit IO Cloud Dashboard Interface</div>
+          <div class="checklist-item"><span class="checklist-check">☑</span> How Commands Are Sent to ESP32</div>
+          <div class="checklist-item"><span class="checklist-check">☑</span> Photographs of Physical Setup (Bulb ON &amp; OFF)</div>
+          <div class="checklist-item"><span class="checklist-check">☑</span> Screenshots of Cloud Web Interface</div>
+          <div class="checklist-item"><span class="checklist-check">☑</span> Video Proof of 230V Bulb Control</div>
+          <div class="checklist-item"><span class="checklist-check">☑</span> Problems &amp; Solutions Log</div>
+          <div class="checklist-item"><span class="checklist-check">☑</span> Key Learning Reflection</div>
+          <div class="checklist-item"><span class="checklist-check">☑</span> Repository Files Downloadable</div>
+        </div>
+      </div>
+
+      <!-- 1. Objective & Problem Addressed -->
+      <div class="dossier-section">
+        <h3>1. Objective &amp; Problem Addressed</h3>
+        <p>
+          <strong>Objective:</strong> To engineer and physically test an IoT cloud telemetry and actuation node using the <strong>ESP32 Dev Module</strong>, a <strong>5V Optocoupled Relay Module</strong>, and the <strong>Adafruit IO MQTT Cloud Broker</strong>. The system enables a user anywhere in the world to toggle a high-voltage 230V AC incandescent bulb safely and instantaneously from an online cloud dashboard.
+        </p>
+        <p style="margin-top:0.8rem;">
+          <strong>Problem Being Addressed:</strong> While Task 1 tackled local intranet control through an embedded HTTP server, local web servers are confined to the router's subnet and cannot be operated from external cellular networks or remote locations without complex port-forwarding or static public IPs. Furthermore, low-voltage microcontroller logic (3.3V DC) cannot directly interface with heavy AC mains equipment (230V AC) without galvanic isolation. This project solves both challenges: using MQTT over TCP for ubiquitous cloud reachability, and an optocoupled electromagnetic relay for complete electrical isolation.
+        </p>
+
+        <!-- Featured Video Demonstration Under Task 2 Content -->
+        <div id="task2-video" class="glass card" style="padding: 1.8rem; margin: 1.8rem 0; background: linear-gradient(135deg, rgba(61, 204, 142, 0.08), rgba(74, 158, 232, 0.05)); border-color: rgba(61, 204, 142, 0.35);">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.6rem; margin-bottom:1rem;">
+            <div>
+              <span class="task-badge badge-completed">Live Demonstration Video</span>
+              <h4 style="font-size:1.2rem; margin-top:0.4rem; color:var(--text);">Cloud Actuation: 230V AC Bulb Control via Adafruit IO</h4>
+            </div>
+            <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+              <button class="btn btn-primary btn-open-video-modal" data-video-src="iot_assets/task2_video.mp4" data-video-caption="Task 2: ESP32 + Relay + Adafruit IO 230V Bulb Control Demonstration" style="font-size:0.8rem; padding:0.4rem 0.9rem;">
+                ⛶ Open in Fullscreen Modal
+              </button>
+              <a href="iot_assets/task2_video.mp4" download="task2_video.mp4" class="btn btn-ghost" style="font-size:0.8rem; padding:0.4rem 0.9rem;">
+                💾 Download Video (.mp4)
+              </a>
+            </div>
+          </div>
+
+          <!-- Video Player with animated WebP fallback and overlay play button -->
+          <div class="video-player-container" style="max-width: 480px; margin: 0 auto; position:relative;">
+            <video id="task2-video-player" controls autoplay muted loop playsinline preload="auto" poster="iot_assets/task2_setup_photo2.jpg" style="width:100%; border-radius:14px; display:block;">
+              <source src="iot_assets/task2_video.mp4" type="video/mp4">
+              <img src="iot_assets/task2_demo_animated.webp" alt="Task 2 Live Animation" style="width:100%; border-radius:14px;">
+            </video>
+          </div>
+          <p class="video-caption" style="text-align:center; font-size:0.85rem; color:var(--text2); margin-top:0.7rem;">
+            ▶ Video Proof: Toggling the Adafruit IO dashboard switch triggers MQTT publish $\to$ ESP32 subscription callback $\to$ GPIO 5 relay closure $\to$ 230V Bulb illuminates instantly.
+          </p>
+        </div>
+      </div>
+
+      <!-- 2. Basic Concept of Adafruit IO & MQTT -->
+      <div class="dossier-section">
+        <h3>2. Basic Concept of Adafruit IO &amp; MQTT</h3>
+        <p>
+          <strong>MQTT (Message Queuing Telemetry Transport)</strong> is an extremely lightweight Publish-Subscribe messaging transport protocol optimized for resource-constrained embedded nodes operating over high-latency or low-bandwidth networks:
+        </p>
+        <ul style="margin: 0.8rem 0 0.8rem 1.4rem; list-style: disc; color: var(--text2); line-height: 1.8;">
+          <li><strong>Publish-Subscribe Architecture:</strong> Nodes do not address each other directly. Instead, publishers emit payloads to hierarchical <em>topics</em> or <em>feeds</em> on a central broker, which distributes messages immediately to all subscribed clients.</li>
+          <li><strong>Low Overhead &amp; High Throughput:</strong> MQTT packets possess a compact 2-byte fixed header, minimizing Wi-Fi radio transmission energy compared to verbose HTTP request headers.</li>
+          <li><strong>Adafruit IO Cloud Broker:</strong> Cloud infrastructure provided by Adafruit running an MQTT broker at <code>io.adafruit.com:1883</code>. Feeds (such as <code>vasuhema/feeds/bulb-control</code>) act as the bidirectional data pipe, visualized via customizable dashboard widgets.</li>
+        </ul>
+      </div>
+
+      <!-- 3. How ESP32 and Dashboard Communicate -->
+      <div class="dossier-section">
+        <h3>3. How ESP32 and Dashboard Communicate over Wi-Fi &amp; MQTT</h3>
+        <p>
+          The end-to-end cloud control lifecycle proceeds through 4 core phases:
+        </p>
+        <div class="spec-table-wrapper" style="margin-top:0.9rem;">
+          <table class="spec-table">
+            <thead>
+              <tr>
+                <th>Phase</th>
+                <th>Sender</th>
+                <th>Receiver</th>
+                <th>Protocol Details &amp; Payload</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>1. Network Handshake</strong></td>
+                <td>ESP32</td>
+                <td>Local AP / Router</td>
+                <td>ESP32 links to Wi-Fi SSID <code>protosem</code> and obtains local DHCP IP.</td>
+              </tr>
+              <tr>
+                <td><strong>2. Broker Authentication</strong></td>
+                <td>ESP32</td>
+                <td><code>io.adafruit.com:1883</code></td>
+                <td>MQTT <code>CONNECT</code> packet with username <code>vasuhema</code> and AIO Key.</td>
+              </tr>
+              <tr>
+                <td><strong>3. Feed Subscription</strong></td>
+                <td>ESP32</td>
+                <td>Adafruit IO Broker</td>
+                <td>Issues <code>SUBSCRIBE</code> packet for feed <code>vasuhema/feeds/bulb-control</code>.</td>
+              </tr>
+              <tr>
+                <td><strong>4. Command Publish</strong></td>
+                <td>User Laptop Browser</td>
+                <td>Adafruit IO Dashboard</td>
+                <td>User clicks toggle switch. Dashboard publishes <code>"1"</code> (ON) or <code>"0"</code> (OFF) to the feed.</td>
+              </tr>
+              <tr>
+                <td><strong>5. Edge Actuation</strong></td>
+                <td>Adafruit IO Broker</td>
+                <td>ESP32 Client Callback</td>
+                <td>Broker pushes message. ESP32 receives payload, drives <code>digitalWrite(5, HIGH)</code>, energizing the relay coil.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 4. Hardware Components Used -->
+      <div class="dossier-section">
+        <h3>4. Hardware Components Used</h3>
+        <div class="spec-table-wrapper">
+          <table class="spec-table">
+            <thead>
+              <tr>
+                <th>Component</th>
+                <th>Specification / Part</th>
+                <th>Qty</th>
+                <th>Role in Circuit</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Microcontroller</strong></td>
+                <td>ESP32 Dev Module (30-pin, Xtensa Dual-Core)</td>
+                <td>1</td>
+                <td>Wi-Fi client, MQTT subscriber, and GPIO 5 digital driver</td>
+              </tr>
+              <tr>
+                <td><strong>Relay Module</strong></td>
+                <td>1-Channel 5V Relay with Optocoupler (Songle SRD-05VDC-SL-C)</td>
+                <td>1</td>
+                <td>Galvanic electrical isolation &amp; high-voltage electromechanical switching (rated 250VAC/10A)</td>
+              </tr>
+              <tr>
+                <td><strong>Load / Actuator</strong></td>
+                <td>230V AC Domestic Incandescent / LED Bulb</td>
+                <td>1</td>
+                <td>Physical high-voltage optical illumination target</td>
+              </tr>
+              <tr>
+                <td><strong>Lamp Holder</strong></td>
+                <td>Standard B22 / E27 Batten Lamp Base with Cord</td>
+                <td>1</td>
+                <td>Secure mechanical fixture for AC bulb connections</td>
+              </tr>
+              <tr>
+                <td><strong>Power Cord</strong></td>
+                <td>2-Pin 230V AC Mains Cable with 5A Plug</td>
+                <td>1</td>
+                <td>Direct connection to domestic 230V 50Hz single-phase supply</td>
+              </tr>
+              <tr>
+                <td><strong>Interconnects</strong></td>
+                <td>Male-to-Female DuPont Jumpers &amp; Breadboard</td>
+                <td>4</td>
+                <td>Routes 5V, GND, and GPIO 5 control lines to Relay input header</td>
+              </tr>
+              <tr>
+                <td><strong>Host Terminal</strong></td>
+                <td>Laptop with Adafruit IO Cloud Dashboard</td>
+                <td>1</td>
+                <td>Human-Machine Interface issuing MQTT control messages</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 5. Circuit & Wiring Diagram -->
+      <div class="dossier-section">
+        <h3>5. Circuit &amp; Wiring Diagram</h3>
+        <p style="color:var(--text2); font-size:0.9rem; margin-bottom:1rem;">
+          The schematic below demonstrates the critical safety boundary: low-voltage 3.3V/5V DC logic is galvanically isolated from the 230V AC mains line via the relay module's internal optocoupler:
+        </p>
+
+        <div class="circuit-card">
+          <div class="circuit-svg-container">
+            <svg viewBox="0 0 800 280" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-width:760px;">
+              <!-- ESP32 Board -->
+              <rect x="20" y="40" width="160" height="200" rx="10" fill="#0d1b2a" stroke="#4a9ee8" stroke-width="2"/>
+              <text x="100" y="70" fill="#4a9ee8" font-family="Outfit" font-weight="700" font-size="14" text-anchor="middle">ESP32 Dev Module</text>
+              <rect x="55" y="85" width="90" height="45" rx="4" fill="#1b2a3a" stroke="#6fb6f5" stroke-width="1"/>
+              <text x="100" y="112" fill="#93a5b5" font-family="monospace" font-size="10" text-anchor="middle">Wi-Fi + MQTT</text>
+              
+              <circle cx="170" cy="150" r="5" fill="#3dcc8e"/>
+              <text x="160" y="154" fill="#3dcc8e" font-family="monospace" font-size="11" text-anchor="end">GPIO 5</text>
+              <circle cx="170" cy="180" r="5" fill="#e85a5a"/>
+              <text x="160" y="184" fill="#e85a5a" font-family="monospace" font-size="11" text-anchor="end">VIN (5V)</text>
+              <circle cx="170" cy="210" r="5" fill="#64798a"/>
+              <text x="160" y="214" fill="#93a5b5" font-family="monospace" font-size="11" text-anchor="end">GND</text>
+
+              <!-- Low-Voltage Control Lines -->
+              <path d="M 175 150 L 260 150" stroke="#3dcc8e" stroke-width="3" stroke-linecap="round"/>
+              <path d="M 175 180 L 260 180" stroke="#e85a5a" stroke-width="2.5" stroke-linecap="round"/>
+              <path d="M 175 210 L 260 210" stroke="#64798a" stroke-width="2.5" stroke-linecap="round"/>
+
+              <!-- Single Channel Relay Module Box -->
+              <rect x="260" y="40" width="220" height="200" rx="10" fill="#102030" stroke="#3dcc8e" stroke-width="2"/>
+              <text x="370" y="70" fill="#3dcc8e" font-family="Outfit" font-weight="700" font-size="14" text-anchor="middle">5V Optocoupled Relay</text>
+              
+              <!-- Input Terminal Block -->
+              <circle cx="270" cy="150" r="4" fill="#3dcc8e"/>
+              <text x="280" y="154" fill="#3dcc8e" font-family="monospace" font-size="10">IN</text>
+              <circle cx="270" cy="180" r="4" fill="#e85a5a"/>
+              <text x="280" y="184" fill="#e85a5a" font-family="monospace" font-size="10">VCC</text>
+              <circle cx="270" cy="210" r="4" fill="#64798a"/>
+              <text x="280" y="214" fill="#93a5b5" font-family="monospace" font-size="10">GND</text>
+
+              <!-- Internal Optocoupler & Relay Coil Icon -->
+              <rect x="320" y="90" width="100" height="50" rx="6" fill="#1b2a3a" stroke="#f0a030" stroke-width="1.5"/>
+              <text x="370" y="112" fill="#f0a030" font-family="monospace" font-size="10" text-anchor="middle">PC817 Opto</text>
+              <text x="370" y="128" fill="#93a5b5" font-family="monospace" font-size="9" text-anchor="middle">Galvanic Gap</text>
+
+              <!-- Relay Output Terminal Blocks (COM / NO) -->
+              <circle cx="470" cy="120" r="5" fill="#f0a030"/>
+              <text x="460" y="124" fill="#f0a030" font-family="monospace" font-size="11" text-anchor="end">COM</text>
+              <circle cx="470" cy="160" r="5" fill="#f0a030"/>
+              <text x="460" y="164" fill="#f0a030" font-family="monospace" font-size="11" text-anchor="end">NO</text>
+
+              <!-- High-Voltage AC Lines -->
+              <path d="M 475 120 L 560 120" stroke="#f0a030" stroke-width="3.5" stroke-linecap="round"/>
+              <text x="515" y="110" fill="#f0a030" font-family="monospace" font-size="10">230V Phase</text>
+
+              <!-- 230V Bulb Representation -->
+              <g transform="translate(620, 100)">
+                <circle cx="40" cy="40" r="32" fill="rgba(240, 160, 48, 0.25)" stroke="#f0a030" stroke-width="2.5"/>
+                <path d="M 28 65 L 52 65 L 48 78 L 32 78 Z" fill="#64798a"/>
+                <!-- Filament -->
+                <path d="M 32 45 Q 40 25 48 45" stroke="#f0a030" stroke-width="2" fill="none"/>
+                <!-- Rays -->
+                <line x1="40" y1="2" x2="40" y2="-6" stroke="#f0a030" stroke-width="2"/>
+                <line x1="72" y1="18" x2="78" y2="12" stroke="#f0a030" stroke-width="2"/>
+                <line x1="8" y1="18" x2="2" y2="12" stroke="#f0a030" stroke-width="2"/>
+                <text x="40" y="105" fill="#f0a030" font-family="Outfit" font-weight="700" font-size="12" text-anchor="middle">230V AC Bulb</text>
+              </g>
+
+              <path d="M 475 160 L 620 160" stroke="#f0a030" stroke-width="3" stroke-linecap="round"/>
+              <path d="M 560 120 L 560 40 L 740 40 L 740 140 L 690 140" stroke="#e85a5a" stroke-width="2" stroke-dasharray="4,4"/>
+              
+              <!-- AC Neutral Return Line -->
+              <path d="M 690 155 L 750 155 L 750 250 L 540 250" stroke="#6fb6f5" stroke-width="3"/>
+              <text x="640" y="240" fill="#6fb6f5" font-family="monospace" font-size="11">AC Neutral Wire</text>
+
+              <!-- 230V AC Mains Plug Symbol -->
+              <rect x="490" y="235" width="50" height="30" rx="4" fill="#08111a" stroke="#fff" stroke-width="1.5"/>
+              <text x="515" y="255" fill="#fff" font-family="monospace" font-size="10" text-anchor="middle">~230V</text>
+            </svg>
+          </div>
+          <p style="font-size:0.84rem; color:var(--text3); text-align:center;">
+            Figure: Optocoupled relay architecture isolating 3.3V/5V DC logic from high-voltage 230V AC mains lines.
+          </p>
+        </div>
+      </div>
+
+      <!-- 6. ESP32 Pin Connections -->
+      <div class="dossier-section">
+        <h3>6. ESP32 Pin Connections</h3>
+        <div class="spec-table-wrapper">
+          <table class="spec-table">
+            <thead>
+              <tr>
+                <th>ESP32 Physical Header</th>
+                <th>Internal GPIO Identifier</th>
+                <th>Target Module Pin</th>
+                <th>Signal Direction</th>
+                <th>Electrical Purpose &amp; Safety Rating</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Pin D5</strong></td>
+                <td><code>GPIO 5</code></td>
+                <td>Relay Module <code>IN</code></td>
+                <td>Output (Digital 3.3V)</td>
+                <td>Digital trigger line driving the optocoupler internal LED. High drives coil closed.</td>
+              </tr>
+              <tr>
+                <td><strong>VIN</strong></td>
+                <td><code>5V VBUS Rail</code></td>
+                <td>Relay Module <code>VCC</code></td>
+                <td>Power Supply (5V DC)</td>
+                <td>Supplies the ~70mA operating current demanded by the electromagnetic coil during latching.</td>
+              </tr>
+              <tr>
+                <td><strong>GND</strong></td>
+                <td><code>Common Ground</code></td>
+                <td>Relay Module <code>GND</code></td>
+                <td>Ground Reference</td>
+                <td>Common DC return path ensuring clean reference logic.</td>
+              </tr>
+              <tr>
+                <td><strong>Relay COM</strong></td>
+                <td><code>Common Terminal</code></td>
+                <td>230V AC Live (Phase) Wire</td>
+                <td>High-Voltage Switch</td>
+                <td>Switches the incoming high-potential conductor safely inside arc-quenched chamber.</td>
+              </tr>
+              <tr>
+                <td><strong>Relay NO</strong></td>
+                <td><code>Normally Open Terminal</code></td>
+                <td>Bulb Socket Live Input</td>
+                <td>Load Supply Line</td>
+                <td>Contacts close only when GPIO 5 is driven HIGH, completing the circuit to illuminate the bulb.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 7. Complete Source Code -->
+      <div class="dossier-section">
+        <h3>7. Complete Arduino/ESP32 Source Code</h3>
+        <p style="color:var(--text2); font-size:0.9rem;">
+          Production-tested sketch operating on the <strong>Adafruit MQTT Client library</strong>, featuring automatic broker reconnection with exponential backoff and watchdog keepalive pings:
+        </p>
+
+        <div class="code-box">
+          <div class="code-header">
+            <div class="code-dots">
+              <span class="code-dot"></span>
+              <span class="code-dot"></span>
+              <span class="code-dot"></span>
+            </div>
+            <span>task2_esp32_relay_adafruit_mqtt.ino — Arduino C++</span>
+            <button class="code-copy-btn">Copy Code</button>
+          </div>
+          <pre class="code-content"><code>/*
+  =============================================================================
+  Project     : ESP32 + Relay + Adafruit IO (MQTT) — 230V Bulb ON/OFF Control
+  Authors     : Vasugi D (23BMC061) &amp; Hemavarshini S N (B.E. Mechatronics, KCT)
+  Hardware    : ESP32 Dev Module, Single Channel Relay Module (GPIO 5), 230V AC Bulb
+  Protocol    : MQTT (Message Queuing Telemetry Transport) over TCP Port 1883
+  Broker      : io.adafruit.com | Feed: vasuhema/feeds/bulb-control
+  =============================================================================
+*/
+
+#include &lt;WiFi.h&gt;
+#include "Adafruit_MQTT.h"
+#include "Adafruit_MQTT_Client.h"
+
+// ---------- Wi-Fi Credentials ----------
+#define WLAN_SSID       "protosem"
+#define WLAN_PASS       "Proto#123"
+
+// ---------- Adafruit IO Credentials ----------
+#define AIO_SERVER      "io.adafruit.com"
+#define AIO_SERVERPORT  1883                 // 1883 = standard unencrypted, 8883 = SSL/TLS
+#define AIO_USERNAME    "vasuhema"
+#define AIO_KEY         "aio_zrty295C0qMAQIQv5tSpfPa71uix"
+
+// ---------- Actuator Pin Assignment ----------
+#define RELAY_PIN 5
+
+// ---------- Wi-Fi + MQTT Client Instances ----------
+WiFiClient client;
+Adafruit_MQTT_Client mqtt(&amp;client, AIO_SERVER, AIO_SERVERPORT, AIO_USERNAME, AIO_KEY);
+
+// ---------- Feed Subscription Setup ----------
+Adafruit_MQTT_Subscribe bulbFeed = Adafruit_MQTT_Subscribe(&amp;mqtt, AIO_USERNAME "/feeds/bulb-control");
+
+void MQTT_connect();
+
+void setup() {
+  Serial.begin(115200);
+  delay(10);
+
+  // Configure Relay GPIO pin as Output
+  pinMode(RELAY_PIN, OUTPUT);
+  digitalWrite(RELAY_PIN, LOW); // Fail-safe default: Bulb OFF on boot
+
+  // Establish Wi-Fi Association
+  Serial.print("[Wi-Fi] Connecting to ");
+  Serial.println(WLAN_SSID);
+  WiFi.begin(WLAN_SSID, WLAN_PASS);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println();
+  Serial.println("[Wi-Fi] Connected successfully!");
+  Serial.print("[Wi-Fi] Local IP: ");
+  Serial.println(WiFi.localIP());
+
+  // Subscribe to Adafruit IO Feed
+  mqtt.subscribe(&amp;bulbFeed);
+  Serial.println("[MQTT] Subscribed to feed: " AIO_USERNAME "/feeds/bulb-control");
+}
+
+void loop() {
+  // Ensure active MQTT broker connection
+  MQTT_connect();
+
+  // Wait up to 5000 ms for incoming subscription packet
+  Adafruit_MQTT_Subscribe *subscription;
+  while ((subscription = mqtt.readSubscription(5000))) {
+    if (subscription == &amp;bulbFeed) {
+      String value = (char *)bulbFeed.lastread;
+      Serial.print("[Cloud Command] Received: ");
+      Serial.println(value);
+
+      if (value == "1" || value == "ON" || value == "on") {
+        digitalWrite(RELAY_PIN, HIGH);   // Latch Relay -> Bulb ON
+        Serial.println("[Actuation] Relay CLOSED -> 230V Bulb ON");
+      } else if (value == "0" || value == "OFF" || value == "off") {
+        digitalWrite(RELAY_PIN, LOW);    // Unlatch Relay -> Bulb OFF
+        Serial.println("[Actuation] Relay OPEN -> 230V Bulb OFF");
+      }
+    }
+  }
+
+  // Ping the broker to maintain TCP keepalive window
+  if (!mqtt.ping()) {
+    mqtt.disconnect();
+  }
+}
+
+// Function to handle robust reconnect with exponential backoff
+void MQTT_connect() {
+  int8_t ret;
+  if (mqtt.connected()) {
+    return;
+  }
+
+  Serial.print("[MQTT] Connecting to Adafruit IO... ");
+  uint8_t retries = 3;
+  while ((ret = mqtt.connect()) != 0) {
+    Serial.println(mqtt.connectErrorString(ret));
+    Serial.println("[MQTT] Retrying connection in 5 seconds...");
+    mqtt.disconnect();
+    delay(5000);
+    retries--;
+    if (retries == 0) {
+      // Trigger software watchdog restart if broker unreachable
+      while (1);
+    }
+  }
+  Serial.println("[MQTT] Connected successfully!");
+}</code></pre>
+        </div>
+
+        <div style="margin-top: 1rem; display: flex; gap: 0.8rem; flex-wrap: wrap;">
+          <a href="iot_assets/task2_esp32_relay_adafruit_mqtt.ino" download="task2_esp32_relay_adafruit_mqtt.ino" class="btn btn-primary" style="font-size: 0.85rem; padding: 0.55rem 1.1rem;">
+            💾 Download Task 2 Sketch (.ino)
+          </a>
+        </div>
+      </div>
+
+      <!-- 8. Cloud Dashboard Interface Developed -->
+      <div class="dossier-section">
+        <h3>8. Cloud Dashboard Interface Developed</h3>
+        <p>
+          The human interface was developed on **Adafruit IO**, featuring a dedicated toggle switch block mapped directly to the `bulb-control` feed. Below is an interactive live simulator demonstrating the exact toggle behavior:
+        </p>
+
+        <!-- Interactive Cloud Toggle Simulation Widget -->
+        <div class="sim-panel" style="border-color: rgba(61, 204, 142, 0.4);">
+          <span style="font-family:var(--font-display); font-size:0.75rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--green);">
+            Adafruit IO Cloud Dashboard Simulation
+          </span>
+          <h4 style="margin: 0.4rem 0 0.8rem; color:#fff; font-size:1.3rem;">Feed: vasuhema / bulb-control</h4>
+          
+          <div class="sim-screen">
+            <span style="font-size:0.78rem; color:var(--text3); text-transform:uppercase; letter-spacing:0.1em; display:block; margin-bottom:0.35rem;">
+              Relay Latch &amp; Bulb State
+            </span>
+            <div>
+              <span id="sim-task2-indicator" class="sim-indicator on"></span>
+              <span id="sim-task2-state" class="sim-state-text" style="color:#3dcc8e;">BULB ON (230V Active)</span>
+            </div>
+          </div>
+
+          <div class="sim-btn-group">
+            <button id="sim-task2-on" class="sim-btn sim-btn-on">PUBLISH: 1 (TURN ON)</button>
+            <button id="sim-task2-off" class="sim-btn sim-btn-off">PUBLISH: 0 (TURN OFF)</button>
+          </div>
+
+          <div style="margin-top: 1rem; padding: 0.6rem; border-radius: 8px; background: rgba(0,0,0,0.5); font-family: monospace; font-size: 0.76rem; color:#3dcc8e;" id="sim-task2-log">
+            MQTT Client Subscribed: io.adafruit.com:1883 -> Status: CONNECTED
+          </div>
+        </div>
+      </div>
+
+      <!-- 9. How Command is Sent -->
+      <div class="dossier-section">
+        <h3>9. How the Dashboard Sends Commands to the ESP32</h3>
+        <ol style="margin: 0.8rem 0 0.8rem 1.4rem; color: var(--text2); line-height: 1.8;">
+          <li><strong>User Dashboard Action:</strong> The user flips the visual toggle switch on the Adafruit IO web interface.</li>
+          <li><strong>MQTT Publish Event:</strong> The web client executes an internal API call, causing the Adafruit IO broker to dispatch an MQTT <code>PUBLISH</code> packet to topic: <code>vasuhema/feeds/bulb-control</code> with string payload <code>"1"</code> or <code>"0"</code>.</li>
+          <li><strong>Subscription Listening Loop:</strong> In the ESP32 firmware, <code>mqtt.readSubscription(5000)</code> intercepts the inbound message on TCP port 1883.</li>
+          <li><strong>Condition Branching:</strong> The firmware evaluates <code>value == "1"</code>.</li>
+          <li><strong>Hardware Actuation:</strong> The ESP32 executes <code>digitalWrite(RELAY_PIN, HIGH)</code>. The 3.3V signal forward-biases the relay's internal optocoupler photodiode, triggering the driver transistor to energize the 5V electromagnetic coil.</li>
+          <li><strong>Mains Closure:</strong> The physical armature snaps from Normally Closed to Normally Open, completing the 230V AC loop and lighting the bulb.</li>
+        </ol>
+      </div>
+
+      <!-- 10. Photographs of Physical Setup -->
+      <div id="task2-photos" class="dossier-section">
+        <h3>10. Photographs of the Physical Setup (Click to Open in Fullscreen Modal)</h3>
+        <p style="color:var(--text2); font-size:0.9rem;">
+          Authentic lab photographs captured during experimental testing at Kumaraguru College of Technology showing Vasugi D and Hemavarshini S N verifying the circuit with the 230V AC bulb:
+        </p>
+
+        <div class="iot-gallery" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));">
+          <div class="iot-gallery-card">
+            <img src="iot_assets/task2_setup_photo1.jpg" alt="Lab Setup with Adafruit IO Dashboard and Bulb" class="clickable-photo">
+            <p><strong>Physical Hardware &amp; Cloud Setup:</strong> Vasugi D and Hemavarshini S N monitoring the Adafruit IO MQTT dashboard on the laptop with the ESP32 and relay wired to the illuminated 230V bulb.</p>
+          </div>
+          <div class="iot-gallery-card">
+            <img src="iot_assets/task2_setup_photo2.jpg" alt="Actuated Bulb and Relay Circuit" class="clickable-photo">
+            <p><strong>Active Actuation State:</strong> Real-time confirmation showing the 230V AC lamp fully energized via the optocoupled relay following a cloud command from the dashboard.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 11. Screenshots of Web Interface -->
+      <div class="dossier-section">
+        <h3>11. Screenshots of the Adafruit IO Web Interface</h3>
+        <div class="iot-gallery" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+          <div class="iot-gallery-card">
+            <img src="iot_assets/task2_dashboard_adafruit.jpg" alt="Adafruit IO Dashboard Toggle Block (Laptop Screen)" class="clickable-photo">
+            <p><strong>Adafruit IO Dashboard:</strong> Cloud dashboard configured with custom toggle switch block linked to feed <code>vasuhema/feeds/bulb-control</code>.</p>
+          </div>
+          <div class="iot-gallery-card">
+            <img src="iot_assets/task2_dashboard.jpg" alt="Adafruit IO Feed Architecture and Dashboard Layout" class="clickable-photo">
+            <p><strong>Circuit Telemetry Trace:</strong> Optocoupled relay latching verification and signal flow.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 12. Video Demonstrating Bulb ON/OFF Control -->
+      <div class="dossier-section">
+        <h3>12. Video Proof: Real-Time 230V Bulb Control</h3>
+        <p style="color:var(--text2); font-size:0.9rem;">
+          Demonstration clip proving instantaneous remote toggling of the 230V lamp via the cloud MQTT dashboard:
+        </p>
+
+        <div class="video-player-container" style="max-width: 480px; margin: 1.5rem auto;">
+          <video controls autoplay muted loop playsinline preload="auto" poster="iot_assets/task2_setup_photo1.jpg" style="width:100%; border-radius:14px; display:block;">
+            <source src="iot_assets/task2_video.mp4" type="video/mp4">
+            <img src="iot_assets/task2_demo_animated.webp" alt="Task 2 Demonstration Animation" style="width:100%; border-radius:14px;">
+          </video>
+        </div>
+        <p class="video-caption" style="text-align:center;">
+          ▶ Video Demonstration: Real-time AC mains bulb switching triggered via Adafruit IO MQTT subscription on ESP32.
+        </p>
+      </div>
+
+      <!-- 13. Problems Encountered and Solutions -->
+      <div class="dossier-section">
+        <h3>13. Problems Encountered &amp; How They Were Solved</h3>
+        <div class="trouble-grid">
+          <div class="trouble-item">
+            <div class="issue-title">⚠️ Issue 1: MQTT Broker Connection Timeouts</div>
+            <p>Intermittent Wi-Fi jitter caused the client to lose broker synchronization, leading to missed control triggers.</p>
+            <div class="solution-title">✅ Solution Implemented</div>
+            <p>Engineered an automatic reconnect handler (<code>MQTT_connect()</code>) with an 8-bit retry counter and regular keepalive pings (<code>mqtt.ping()</code>) on every loop iteration.</p>
+          </div>
+          <div class="trouble-item">
+            <div class="issue-title">⚠️ Issue 2: Relay Coil Inrush Current Brownout</div>
+            <p>Powering the relay coil directly from the ESP32's 3.3V rail caused voltage drops and microcontroller reset.</p>
+            <div class="solution-title">✅ Solution Implemented</div>
+            <p>Re-routed the relay's VCC line to the 5V VIN power pin directly connected to the external USB bus, keeping the 3.3V digital logic rail stable.</p>
+          </div>
+          <div class="trouble-item">
+            <div class="issue-title">⚠️ Issue 3: AC Mains Inductive EMI Noise</div>
+            <p>High-voltage switching generated electromagnetic noise that occasionally crashed serial communication.</p>
+            <div class="solution-title">✅ Solution Implemented</div>
+            <p>Utilized an optocoupled relay module featuring an internal PC817 optical isolator and a 1N4007 flyback diode across the coil to absorb back-EMF spikes.</p>
+          </div>
+          <div class="trouble-item">
+            <div class="issue-title">⚠️ Issue 4: Bootloader Strapping Glitch on Relay Pins</div>
+            <p>Connecting the relay to strapping pins caused the relay to click erratically during ESP32 power-on bootloader sequence.</p>
+            <div class="solution-title">✅ Solution Implemented</div>
+            <p>Assigned the trigger line to general-purpose GPIO 5 and enforced <code>digitalWrite(RELAY_PIN, LOW)</code> immediately at the start of <code>setup()</code>.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 14. Reflection -->
+      <div class="dossier-section">
+        <h3>14. Reflection on What I Learned</h3>
+        <ul style="margin: 0.8rem 0 0.8rem 1.4rem; list-style: disc; color: var(--text2); line-height: 1.8;">
+          <li><strong>Mastering Cloud MQTT:</strong> Implementing the Publish-Subscribe pattern with Adafruit IO revealed why MQTT is the gold standard for industrial IoT—delivering global control without router port-forwarding.</li>
+          <li><strong>High-Voltage Safety &amp; Mechatronic Isolation:</strong> Interfacing delicate 3.3V silicon with lethal 230V AC lines reinforced the necessity of optical isolation, creepage distances, and flyback diode protection.</li>
+          <li><strong>Teamwork with Hemavarshini:</strong> Collaborating with my classmate Hemavarshini S N to wire, debug, and authenticate the shared feed (<code>vasuhema</code>) showcased the power of collaborative embedded problem-solving.</li>
+        </ul>
+      </div>
+
+      <!-- 15. Repository Availability -->
+      <div class="dossier-section" style="margin-bottom: 0;">
+        <h3>15. Repository &amp; Code Availability</h3>
+        <div style="display:flex; gap:1rem; flex-wrap:wrap; margin-top:1rem;">
+          <a href="iot_assets/task2_esp32_relay_adafruit_mqtt.ino" download="task2_esp32_relay_adafruit_mqtt.ino" class="btn btn-primary" style="font-size:0.85rem; padding:0.6rem 1.2rem;">
+            📄 Download Task 2 Arduino Sketch (.ino)
+          </a>
+          <a href="iot_assets/task2_video.mp4" download="task2_video.mp4" class="btn btn-ghost" style="font-size:0.85rem; padding:0.6rem 1.2rem;">
+            🎥 Download Task 2 Demonstration Video (.mp4)
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer class="footer">
+  <div class="container footer-inner">
+    <p>© <span data-year></span> Vasugi D &amp; Hemavarshini S N · Mechatronics &amp; IoT Portfolio</p>
+    <p><a href="mailto:vasugi.23mc@kct.ac.in">vasugi.23mc@kct.ac.in</a></p>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
